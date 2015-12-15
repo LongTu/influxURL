@@ -90,12 +90,9 @@ func influxDBHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 	log.Println(string(res[:]))
-	a, err := json.Marshal(string(res[:]))
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	rw.Write(a)
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(res[:])
+
 	return
 }
 
