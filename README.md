@@ -41,3 +41,8 @@ After the above config, the last step is to change the file permmision of creden
 ```
 chmod 444 credential.config
 ```
+
+To make the program run as backend jobs
+```
+nohup $GOPATH/bin/influxdbUrl &
+```

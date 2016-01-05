@@ -50,12 +50,13 @@ func influxDBHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	/*
 	log.Println(t.PodID)
 	log.Println(t.TimeStart)
 	log.Println(t.TimeEnd)
 	log.Println(t.Limit)
 	log.Println(t.Metric)
-
+	*/
 	podID := t.PodID
 	startTime := t.TimeStart
 	endTime := t.TimeEnd
@@ -63,7 +64,7 @@ func influxDBHandler(rw http.ResponseWriter, req *http.Request) {
 	metrics := t.Metric
 
 	if len(metrics) <= 0 {
-		log.Println("no metrics")
+		//log.Println("no metrics")
 		return
 	}
 
@@ -83,13 +84,13 @@ func influxDBHandler(rw http.ResponseWriter, req *http.Request) {
 		sql += " LIMIT " + limitNum
 	}
 
-	log.Println(sql)
+	//log.Println(sql)
 	res, err := readInfluxDb(sql, metrics)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println(string(res[:]))
+	//log.Println(string(res[:]))
 	rw.Header().Set("Content-Type", "application/json")
 	rw.Write(res[:])
 
@@ -105,31 +106,24 @@ func readInfluxDb(command string, metrics string) (res []byte, err error) {
 
 	//test username and pw
 	if len(credential[0]) <= 0 {
-		fmt.Println("no username")
 		return res, errors.New("no username")
 	}
 
 	if len(credential[1]) <= 0 {
-		fmt.Println("no password")
 		return res, errors.New("no password")
 	}
 
 	if len(credential[2]) <= 0 {
-		fmt.Println("no dbURL")
 		return res, errors.New("no dbURL")
 	}
 
 	if len(credential[3]) <= 0 {
-		fmt.Println("no dbName")
 		return res, errors.New("no dbName")
 	}
 	linkURL := credential[2] + "?u=" + credential[0] + "&p=" + credential[1] + "&pretty=true"
 	dbNameParam := "db=" + credential[3]
 	//command = "SELECT * FROM \"cpu/usage_ns_cumulative\" WHERE time > '1970-01-01 00:00:00' AND time <now() LIMIT 1"
 	SQLParam := "q=" + command
-	log.Println(linkURL)
-	log.Println(dbNameParam)
-	log.Println(SQLParam)
 	c, err := exec.Command("curl", "-G", linkURL, "--data-urlencode", dbNameParam, "--data-urlencode", SQLParam).Output()
 	if err != nil {
 		return res, err
@@ -153,7 +147,7 @@ func decypher(command string) (s string, err error) {
 	cfbdec := cipher.NewCFBDecrypter(c, commonIV)
 	plaintextCopy := make([]byte, len(ciphertext2))
 	cfbdec.XORKeyStream(plaintextCopy, ciphertext2)
-	fmt.Printf("%x=>%s\n", ciphertext2, plaintextCopy)
+	//fmt.Printf("%x=>%s\n", ciphertext2, plaintextCopy)
 	s = string(plaintextCopy[:])
 	return s, nil
 }
@@ -197,33 +191,25 @@ func getCredentials() (credential []string, err error) {
 
 	//test username and pw
 	if len(username) <= 0 {
-		fmt.Println("no username")
 		return credential, errors.New("no username")
 	}
 
 	realUsername, _ := decypher(username)
-	fmt.Println(realUsername)
 
 	if len(password) <= 0 {
-		fmt.Println("no password")
 		return credential, errors.New("no password")
 	}
 	realPassword, _ := decypher(password)
-	fmt.Println(realPassword)
 
 	if len(dbURL) <= 0 {
-		fmt.Println("no dbURL")
 		return credential, errors.New("no dbURL")
 	}
 	realURL, _ := decypher(dbURL)
-	fmt.Println(realURL)
 
 	if len(dbName) <= 0 {
-		fmt.Println("no dbName")
 		return credential, errors.New("no dbName")
 	}
 	realDBName, _ := decypher(dbName)
-	fmt.Println(realDBName)
 
 	credential[0] = realUsername
 	credential[1] = realPassword
