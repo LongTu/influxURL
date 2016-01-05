@@ -13,7 +13,7 @@ build all go file in influxdbUrl project
 go install influxdbUrl/
 ```
 
-Copy and paste the result generated from encryptionGenerator to credential.config, in the following format:
+Copy and paste the result generated from encryptionGenerator project to credential.config, in the following format:
 ```
 u=${YOUR_ENCRYPTED_USERNAME}
 p=${YOUR_ENCRYPTED_PASSWORD}
@@ -35,3 +35,9 @@ curl -H "Content-Type: application/json" -X POST -d "{\"timeStart\": \"2015-11-0
 
 On the server side, it will print the logs of sql command constructed.
 On the client side, it will print out the http response, it there are any.
+
+
+After the above config, the last step is to change the file permmision of credential.config to read only
+```
+chmod 444 credential.config
+```
